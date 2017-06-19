@@ -11,24 +11,23 @@
 /* external variables */
 
 
-bool straight, flush, four, three;
-int pairs; /* can be 0, 1, or 2 */
-int royal_flush;
-
 /* prototypes */
 void read_cards(int[], int[]);
-void analyze_hand(int[], int[]);
-void print_result(void);
+void analyze_hand(int[], int[], bool *straight, bool *flush, bool *four, bool *three, int *pairs);
+void print_result(bool *straight, bool *flush, bool *four, bool *three, int *pairs);
 
 // main: Calls read_card, analyze_hand, and print_result repeatedly
 int main(void)
 {
+	bool straight, flush, four, three;
+	int pairs; /* can be 0, 1, or 2 */
+
 	int num_in_rank[NUM_RANKS];
 	int num_in_suits[NUM_SUITS];
 	{
 		read_cards(num_in_suits, num_in_rank);
-		analyze_hand(num_in_suits, num_in_rank);
-		print_result();
+		analyze_hand(num_in_suits, num_in_rank, &straight, &flush, &four, &three, &pairs);
+		print_result(&straight, &flush, &four, &three, &pairs);
 	}
 }
 
@@ -109,20 +108,20 @@ void read_cards(int num_in_suits[], int num_in_rank[])
 
 //analyze_hand: Determines whether the hand contains a straight, a flush, four-of-a-kind, and/or three-of-a-kind; determines the number of pairs; stores te results into external variables;
 
-void analyze_hand(int num_in_suits[], int num_in_rank[])
+void analyze_hand(int num_in_suits[], int num_in_rank[], bool *straight, bool *flush, bool *four, bool *three, int *pairs)
 {
 	int num_consec = 0;
 	int rank, suit;
-	straight = false;
-	flush = false;
-	four = false;
-	three = false;
-	pairs = 0;
+	*straight = false;
+	*flush = false;
+	*four = false;
+	*three = false;
+	*pairs = 0;
 
 	/* checks for flush */
 	for (suit = 0; suit < NUM_SUITS; suit++)
 		if (num_in_suits[suit] == NUM_CARDS)
-			flush = true;
+			*flush = true;
 
 	/* check for straight */
 	rank = 0;
@@ -132,42 +131,31 @@ void analyze_hand(int num_in_suits[], int num_in_rank[])
 		num_consec++;
 	if (num_consec == NUM_CARDS)
 	{
-		straight = true;
-	}
-
-	/* check for royal flush */
-	for (int i = NUM_RANKS - 1; i >= 0; i--)
-	{
-		if (num_in_rank[i] > 0)
-		{
-			royal_flush = i;
-		}
+		*straight = true;
+		return;
 	}
 
 	/* check for 4-of-a-kind, 3-of-a-kind, and pairs */
 	for (rank = 0; rank < NUM_RANKS; rank++)
 	{
-		if (num_in_rank[rank] == 4) four = true;
-		if (num_in_rank[rank] == 3) three = true;
-		if (num_in_rank[rank] == 2) pairs++;
+		if (num_in_rank[rank] == 4) *four = true;
+		if (num_in_rank[rank] == 3) *three = true;
+		if (num_in_rank[rank] == 2) *pairs++;
 	}
-
-	return;
 }
 
 //print_result: prints the classification of the hand based on the values of the external variables straight, flush, four, three, and pairs
-void print_result(void)
+void print_result(bool *straight, bool *flush, bool *four, bool *three, int *pairs)
 {
-	if (straight && flush && royal_flush == 8) printf("Royal flush");
-	else if (straight && flush) printf("Straight flush");
-	else if (four) 		printf("Four of a kind");
-	else if (three &&
-		pairs == 1) 	printf("Full house");
-	else if(flush) 		printf("Flush");
-	else if(straight) 	printf("Straight");
-	else if(three) 		printf("Three of a kind");
-	else if(pairs == 2) 	printf("Two pairs");
-	else if(pairs == 1) 	printf("Pair");
+	if (*straight && *flush) printf("Straight flush");
+	else if (*four) 		printf("Four of a kind");
+	else if (*three &&
+		*pairs == 1) 	printf("Full house");
+	else if(*flush) 		printf("Flush");
+	else if(*straight) 	printf("Straight");
+	else if(*three) 		printf("Three of a kind");
+	else if(*pairs == 2) 	printf("Two pairs");
+	else if(*pairs == 1) 	printf("Pair");
 	else 			printf("High card");
 
 	printf("\n\n");

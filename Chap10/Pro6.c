@@ -47,15 +47,18 @@ int pop(void)
 // stack_overflow: Prints a "Stack overflow" message and terminates immediately.
 void stack_overflow(void)
 {
-	printf("Stack overflow\n");
+//	for (int i = 0; i < STACK_SIZE; i++)
+		//printf(" contents[%d] = %d", i, contents[i]);
+//	printf("\n");
+	printf("Expression is too complicated\n");
 	exit(EXIT_FAILURE);
 }
 
 //stack_underflow: prints out a "Parenthese/braces are not nested properly" message and then returns;
 void stack_underflow(void)
 {
-	printf("Parentheses/braces are not nested properly\n");
-	return;
+	printf("Not enough operands in expression\n");
+	exit(EXIT_FAILURE);
 }
 
 int main(void)
@@ -65,10 +68,11 @@ int main(void)
 	int oper1, oper2;
 
 	printf("Enter an RPN expression: ");
-	scanf(" %c", &ch);
 
-	while (ch != '\n')
+	do 
 	{
+		scanf(" %c", &ch);
+
 		switch(ch)
 		{
 			case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9': case '0':
@@ -94,9 +98,9 @@ int main(void)
 				push(oper2 * oper1);
 				break;
 			case '=':
-				printf("Value of expression: %d", pop());
+				printf("Value of expression: %d\n", pop());
 				return 0;
 				break;
 		}
-	}
+	} while (ch != '\n');
 }
